@@ -15,7 +15,8 @@ setup(
         'python-dateutil==1.5',
         'colorama==0.3.1',
         'pytz==2014.4',
-        'humanize==0.5'
+        'humanize==0.5',
+        'argparse==1.2.1'
     ],
     classifiers=[
       'Environment :: Console'
