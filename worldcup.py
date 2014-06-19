@@ -7,6 +7,7 @@ import colorama
 import humanize
 import dateutil.parser
 import dateutil.tz
+import argparse
 
 
 FUTURE = "future"
@@ -15,12 +16,22 @@ PAST = "past"
 SCREEN_WIDTH = 68
 
 
+parser = argparse.ArgumentParser()
+parser.add_argument('-b', '--background', default='dark', help='Background of \
+                    screen. use `light` or `dark`')
+parser.add_argument('date', default='now')
+args = parser.parse_args()
+
 def progress_bar(percentage, separator="o", character="-"):
     """
     Creates a progress bar by given percentage value
     """
-    filled = colorama.Fore.GREEN + colorama.Style.BRIGHT
-    empty = colorama.Fore.WHITE + colorama.Style.BRIGHT
+    if args.background == 'dark':
+        filled = colorama.Fore.BLUE + colorama.Style.BRIGHT
+        empty = colorama.Fore.GREEN + colorama.Style.BRIGHT
+    else:
+        filled = colorama.Fore.GREEN + colorama.Style.BRIGHT
+        empty = colorama.Fore.BLUE + colorama.Style.BRIGHT
 
     if percentage == 100:
         return filled + character * SCREEN_WIDTH
@@ -52,26 +63,37 @@ def prettify(match):
     else:
         status = FUTURE
 
-    if status in [PAST, NOW]:
-        color = colorama.Style.BRIGHT + colorama.Fore.GREEN
-    else:
-        color = colorama.Style.NORMAL + colorama.Fore.WHITE
+    if args.background == 'dark':
+        sub_color = colorama.Style.BRIGHT + colorama.Fore.WHITE
+        if status in [PAST, NOW]:
+            color = colorama.Style.BRIGHT + colorama.Fore.GREEN
+            sub_color = color
+        else:
+            color = colorama.Style.NORMAL + colorama.Fore.BLUE
+    if args.background == 'light':
+        sub_color = colorama.Style.NORMAL + colorama.Fore.MAGENTA
+        if status in [PAST, NOW]:
+            color = colorama.Style.BRIGHT + colorama.Fore.GREEN
+            sub_color = color
+        else:
+            color = colorama.Style.NORMAL + colorama.Fore.BLACK
+
 
     home = match['home_team']
     away = match['away_team']
 
     if status == NOW:
         minute = int(seconds / 60)
-        match_status = "Being played now: %s minutes gone" % minute
+        match_status = sub_color + "Being played now: %s minutes gone" % minute
     elif status == PAST:
         if match['winner'] == 'Draw':
             result = 'Draw'
         else:
             result = "%s won" % (match['winner'])
-        match_status = "Played %s. %s" % (humanize.naturaltime(diff),
+        match_status = sub_color + "Played %s. %s" % (humanize.naturaltime(diff),
                                                   result)
     else:
-        match_status = "Will be played %s" % humanize.naturaltime(diff)
+        match_status = sub_color + "Will be played %s" % humanize.naturaltime(diff)
 
     if status == NOW:
         match_percentage = int(seconds / 60 / 90 * 100)
@@ -90,8 +112,8 @@ def prettify(match):
         home['goals'],
         away['goals'],
         away['country'],
-        progress_bar(match_percentage),
-        colorama.Fore.WHITE + match_status
+        progress_bar(75),
+        match_status
     )
 
 
@@ -123,8 +145,8 @@ def fetch(endpoint):
 
 
 def main():
-    colorama.init()
-    endpoint = ''.join(sys.argv[1:])
+    colorama.init(autoreset=True)
+    endpoint = ''.join(sys.argv[1:2])
     for match in fetch(endpoint):
         print prettify(match)
 
