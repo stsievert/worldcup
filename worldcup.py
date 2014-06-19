@@ -112,7 +112,7 @@ def prettify(match):
         home['goals'],
         away['goals'],
         away['country'],
-        progress_bar(75),
+        progress_bar(match_percentage),
         match_status
     )
 
