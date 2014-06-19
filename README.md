@@ -41,3 +41,6 @@ You can pass `today` or `current` options to filter matches.
      ⚽  Played 4 days ago. Winner: Chile
 
 
+#### Optional arguments
+Use `--background light` or `-b light` to format the colors appropriate for a light
+background.
