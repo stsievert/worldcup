@@ -16,11 +16,6 @@ PAST = "past"
 SCREEN_WIDTH = 68
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-b', '--background', default='dark', help='Background of \
-                    screen. use `light` or `dark`')
-parser.add_argument('date', default='now')
-args = parser.parse_args()
 
 def progress_bar(percentage, separator="o", character="-"):
     """
@@ -145,6 +140,13 @@ def fetch(endpoint):
 
 
 def main():
+    global args
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-b', '--background', default='dark', help='Background of \
+                        screen. use `light` or `dark`')
+    parser.add_argument('date', default='now')
+    args = parser.parse_args()
+
     colorama.init(autoreset=True)
     endpoint = ''.join(sys.argv[1:2])
     for match in fetch(endpoint):
